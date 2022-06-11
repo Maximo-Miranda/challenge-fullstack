@@ -2,27 +2,55 @@
 #
 # https://gqlgen.com/getting-started/
 
-type Todo {
-  id: ID!
-  text: String!
-  done: Boolean!
-  user: User!
+type Post {
+  id: Int!
+  title: String!
+  body: String!
+  author: User!
+  createdAt: String!
+  quantityComments: Int!
+}
+
+type Comment {
+  id: Int!
+  postId: Int!
+  name: String!
+  email: String!
+  body: String!
+}
+
+type UserAddressGeo {
+  lat: String!
+  lng: String!
+}
+
+type UserAddress {
+  street: String!
+  suite: String!
+  city: String!
+  zipcode: String!
+  geo: UserAddressGeo!
+}
+
+type UserCompany {
+  name: String!
+  catchPhrase: String!
+  bs: String!
 }
 
 type User {
-  id: ID!
+  id: Int!
   name: String!
+  username: String!
+  email: String!
+  address: UserAddress!
+  phone: String!
+  website: String!
+  company: UserCompany!
 }
 
 type Query {
-  todos: [Todo!]!
-}
-
-input NewTodo {
-  text: String!
-  userId: String!
-}
-
-type Mutation {
-  createTodo(input: NewTodo!): Todo!
+  posts: [Post!]
+  comments: [Comment!]
+  users: [User!]
 }

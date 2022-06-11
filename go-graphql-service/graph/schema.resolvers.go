@@ -9,21 +9,56 @@ import (
 
 	"github.com/Maximo-Miranda/challenge-fullstack/go-graphql-service/graph/generated"
 	"github.com/Maximo-Miranda/challenge-fullstack/go-graphql-service/graph/model"
+	dapr "github.com/dapr/go-sdk/client"
 )
 
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
+func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
+
+	response := []*model.Post{}
+
+	client, err := dapr.NewClient()
+	if err != nil {
+		panic(err)
+	}
+	defer client.Close()
+
+	resp, err := client.InvokeMethod(ctx, "jsonplaceholder", "posts/1", "get")
+	if err != nil {
+		return response, err
+	}
+
+	fmt.Println(string(resp))
+	
+	response = append(response, &model.Post{
+		ID:    1,
+		Title: "Title test",
+		Body:  "Body test",
+		Author: &model.User{
+			ID:       0,
+			Name:     "Maximo Miranda",
+			Username: "mmiranda",
+			Email:    "maximo@gmail.com",
+			Address:  nil,
+			Phone:    "300123456",
+			Website:  "http://localhost",
+			Company:  nil,
+		},
+		CreatedAt:        "2022-06-10",
+		QuantityComments: 15,
+	})
+
+	return response, nil
+}
+
+func (r *queryResolver) Comments(ctx context.Context) ([]*model.Comment, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
 }
-
-// Mutation returns generated.MutationResolver implementation.
-func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }

@@ -13,7 +13,7 @@ func main() {
 
 	port := os.Getenv("PROXY_PORT")
 	if len(port) == 0 {
-		port = "8080"
+		port = "8081"
 	}
 
 	proxyHandler := v1.Proxy{}
