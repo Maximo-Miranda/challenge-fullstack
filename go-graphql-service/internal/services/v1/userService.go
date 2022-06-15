@@ -80,5 +80,4 @@ func (m *UserService) GetByID(ctx context.Context, id int) (UserService, error) 
 	}
 
 	return response, nil
-
 }

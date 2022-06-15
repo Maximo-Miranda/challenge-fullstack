@@ -56,3 +56,24 @@ func (m *CommentService) GetCommentsByPostID(ctx context.Context, postID int) ([
 
 	return response, nil
 }
+
+func (m *CommentService) GetByID(ctx context.Context, id int) (CommentService, error) {
+
+	response := CommentService{}
+
+	client, err := dapr.NewClient()
+	if err != nil {
+		return response, err
+	}
+
+	resp, err := client.InvokeMethod(ctx, "jsonplaceholder", fmt.Sprintf("comments/%d", id), "get")
+	if err != nil {
+		return response, err
+	}
+
+	if err := json.Unmarshal(resp, &response); err != nil {
+		return response, err
+	}
+
+	return response, nil
+}

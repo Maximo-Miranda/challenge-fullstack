@@ -207,7 +207,25 @@ func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
 }
 
 func (r *queryResolver) Comment(ctx context.Context, id int) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented"))
+
+	response := &model.Comment{}
+
+	service := v1.CommentService{}
+
+	apiComment, err := service.GetByID(ctx, id)
+	if err != nil {
+		return response, err
+	}
+
+	response = &model.Comment{
+		ID:     apiComment.ID,
+		PostID: apiComment.PostID,
+		Name:   apiComment.Name,
+		Email:  apiComment.Email,
+		Body:   apiComment.Body,
+	}
+
+	return response, nil
 }
 
 func (r *queryResolver) GetPostsByUserID(ctx context.Context, id int) ([]*model.Post, error) {
