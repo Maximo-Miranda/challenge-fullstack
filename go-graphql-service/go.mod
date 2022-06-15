@@ -4,13 +4,13 @@ go 1.18
 
 require (
 	github.com/99designs/gqlgen v0.17.9
+	github.com/dapr/go-sdk v1.4.0
 	github.com/vektah/gqlparser/v2 v2.4.4
 )
 
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
 	github.com/dapr/dapr v1.6.1-0.20220223052122-c503710ab2d1 // indirect
-	github.com/dapr/go-sdk v1.4.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect

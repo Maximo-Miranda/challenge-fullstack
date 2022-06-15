@@ -44,6 +44,69 @@ func (r *queryResolver) Comments(ctx context.Context) ([]*model.Comment, error) 
 }
 
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+
+	response := []*model.User{}
+
+	service := v1.UserService{}
+
+	apiUsers, err := service.GetAll(ctx)
+	if err != nil {
+		return response, err
+	}
+
+	for _, v := range apiUsers {
+		tmp := model.User{
+			ID:       v.ID,
+			Name:     v.Name,
+			Username: v.Username,
+			Email:    v.Email,
+			Address: &model.UserAddress{
+				Street:  v.Address.Street,
+				Suite:   v.Address.Suite,
+				City:    v.Address.City,
+				Zipcode: v.Address.Zipcode,
+				Geo: &model.UserAddressGeo{
+					Lat: v.Address.Geo.Lat,
+					Lng: v.Address.Geo.Lng,
+				},
+			},
+			Phone:   v.Phone,
+			Website: v.Website,
+			Company: &model.UserCompany{
+				Name:        v.Company.Name,
+				CatchPhrase: v.Company.CatchPhrase,
+				Bs:          v.Company.Bs,
+			},
+		}
+
+		response = append(response, &tmp)
+	}
+
+	return response, nil
+
+}
+
+func (r *queryResolver) User(ctx context.Context, id int) (*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Post(ctx context.Context, id int) (*model.Post, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) Comment(ctx context.Context, id int) (*model.Comment, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) GetPostsByUserID(ctx context.Context, id int) ([]*model.Post, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) GetUserDataByUserID(ctx context.Context, id int) (*model.User, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+func (r *queryResolver) GetCommentsByPostID(ctx context.Context, id int) ([]*model.Comment, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 

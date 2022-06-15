@@ -7,8 +7,8 @@ import (
 )
 
 type PostService struct {
-	ID     int32  `json:"id"`
-	UserID int32  `json:"userId"`
+	ID     int    `json:"id"`
+	UserID int    `json:"userId"`
 	Title  string `json:"title"`
 	Body   string `json:"body"`
 }
@@ -19,9 +19,8 @@ func (m *PostService) GetAll(ctx context.Context) ([]PostService, error) {
 
 	client, err := dapr.NewClient()
 	if err != nil {
-		panic(err)
+		return response, err
 	}
-	defer client.Close()
 
 	resp, err := client.InvokeMethod(ctx, "jsonplaceholder", "posts", "get")
 	if err != nil {
