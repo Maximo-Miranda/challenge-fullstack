@@ -3,6 +3,7 @@ package v1
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	dapr "github.com/dapr/go-sdk/client"
 )
 
@@ -36,6 +37,7 @@ type UserService struct {
 	Company  userCompany `json:"company"`
 }
 
+// GetAll ...
 func (m *UserService) GetAll(ctx context.Context) ([]UserService, error) {
 
 	response := []UserService{}
@@ -46,6 +48,29 @@ func (m *UserService) GetAll(ctx context.Context) ([]UserService, error) {
 	}
 
 	resp, err := client.InvokeMethod(ctx, "jsonplaceholder", "users", "get")
+	if err != nil {
+		return response, err
+	}
+
+	if err := json.Unmarshal(resp, &response); err != nil {
+		return response, err
+	}
+
+	return response, nil
+
+}
+
+// GetByID ...
+func (m *UserService) GetByID(ctx context.Context, id int) (UserService, error) {
+
+	response := UserService{}
+
+	client, err := dapr.NewClient()
+	if err != nil {
+		return response, err
+	}
+
+	resp, err := client.InvokeMethod(ctx, "jsonplaceholder", fmt.Sprintf("users/%d", id), "get")
 	if err != nil {
 		return response, err
 	}

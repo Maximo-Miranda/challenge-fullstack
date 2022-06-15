@@ -57,6 +57,5 @@ type Query {
   post(id: Int!): Post!
   comment(id: Int!): Comment!
   getPostsByUserID(id: Int!): [Post!]!
-  getUserDataByUserID(id: Int!): User!
   getCommentsByPostID(id: Int!): [Comment!]!
 }

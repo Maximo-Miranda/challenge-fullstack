@@ -65,7 +65,6 @@ type ComplexityRoot struct {
 		Comments            func(childComplexity int) int
 		GetCommentsByPostID func(childComplexity int, id int) int
 		GetPostsByUserID    func(childComplexity int, id int) int
-		GetUserDataByUserID func(childComplexity int, id int) int
 		Post                func(childComplexity int, id int) int
 		Posts               func(childComplexity int) int
 		User                func(childComplexity int, id int) int
@@ -111,7 +110,6 @@ type QueryResolver interface {
 	Post(ctx context.Context, id int) (*model.Post, error)
 	Comment(ctx context.Context, id int) (*model.Comment, error)
 	GetPostsByUserID(ctx context.Context, id int) ([]*model.Post, error)
-	GetUserDataByUserID(ctx context.Context, id int) (*model.User, error)
 	GetCommentsByPostID(ctx context.Context, id int) ([]*model.Comment, error)
 }
 
@@ -249,18 +247,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.GetPostsByUserID(childComplexity, args["id"].(int)), true
-
-	case "Query.getUserDataByUserID":
-		if e.complexity.Query.GetUserDataByUserID == nil {
-			break
-		}
-
-		args, err := ec.field_Query_getUserDataByUserID_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Query.GetUserDataByUserID(childComplexity, args["id"].(int)), true
 
 	case "Query.post":
 		if e.complexity.Query.Post == nil {
@@ -537,7 +523,6 @@ type Query {
   post(id: Int!): Post!
   comment(id: Int!): Comment!
   getPostsByUserID(id: Int!): [Post!]!
-  getUserDataByUserID(id: Int!): User!
   getCommentsByPostID(id: Int!): [Comment!]!
 }`, BuiltIn: false},
 }
@@ -593,21 +578,6 @@ func (ec *executionContext) field_Query_getCommentsByPostID_args(ctx context.Con
 }
 
 func (ec *executionContext) field_Query_getPostsByUserID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 int
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNInt2int(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Query_getUserDataByUserID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 int
@@ -1640,79 +1610,6 @@ func (ec *executionContext) fieldContext_Query_getPostsByUserID(ctx context.Cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_getPostsByUserID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Query_getUserDataByUserID(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_getUserDataByUserID(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().GetUserDataByUserID(rctx, fc.Args["id"].(int))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.User)
-	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋMaximoᚑMirandaᚋchallengeᚑfullstackᚋgoᚑgraphqlᚑserviceᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Query_getUserDataByUserID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Query",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_User_id(ctx, field)
-			case "name":
-				return ec.fieldContext_User_name(ctx, field)
-			case "username":
-				return ec.fieldContext_User_username(ctx, field)
-			case "email":
-				return ec.fieldContext_User_email(ctx, field)
-			case "address":
-				return ec.fieldContext_User_address(ctx, field)
-			case "phone":
-				return ec.fieldContext_User_phone(ctx, field)
-			case "website":
-				return ec.fieldContext_User_website(ctx, field)
-			case "company":
-				return ec.fieldContext_User_company(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Query_getUserDataByUserID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -4800,29 +4697,6 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_getPostsByUserID(ctx, field)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			}
-
-			rrm := func(ctx context.Context) graphql.Marshaler {
-				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
-			}
-
-			out.Concurrently(i, func() graphql.Marshaler {
-				return rrm(innerCtx)
-			})
-		case "getUserDataByUserID":
-			field := field
-
-			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Query_getUserDataByUserID(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
