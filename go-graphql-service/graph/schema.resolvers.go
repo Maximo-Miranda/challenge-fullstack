@@ -9,43 +9,32 @@ import (
 
 	"github.com/Maximo-Miranda/challenge-fullstack/go-graphql-service/graph/generated"
 	"github.com/Maximo-Miranda/challenge-fullstack/go-graphql-service/graph/model"
-	dapr "github.com/dapr/go-sdk/client"
+	"github.com/Maximo-Miranda/challenge-fullstack/go-graphql-service/internal/services/v1"
 )
 
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 
 	response := []*model.Post{}
 
-	client, err := dapr.NewClient()
-	if err != nil {
-		panic(err)
-	}
-	defer client.Close()
+	service := v1.PostService{}
 
-	resp, err := client.InvokeMethod(ctx, "jsonplaceholder", "posts/1", "get")
+	apiPosts, err := service.GetAll(ctx)
 	if err != nil {
 		return response, err
 	}
 
-	fmt.Println(string(resp))
-	
-	response = append(response, &model.Post{
-		ID:    1,
-		Title: "Title test",
-		Body:  "Body test",
-		Author: &model.User{
-			ID:       0,
-			Name:     "Maximo Miranda",
-			Username: "mmiranda",
-			Email:    "maximo@gmail.com",
-			Address:  nil,
-			Phone:    "300123456",
-			Website:  "http://localhost",
-			Company:  nil,
-		},
-		CreatedAt:        "2022-06-10",
-		QuantityComments: 15,
-	})
+	for _, v := range apiPosts {
+		tmp := model.Post{
+			ID:               int(v.ID),
+			Title:            v.Title,
+			Body:             v.Body,
+			Author:           nil,
+			CreatedAt:        "2022-06-10",
+			QuantityComments: 15,
+		}
+
+		response = append(response, &tmp)
+	}
 
 	return response, nil
 }
